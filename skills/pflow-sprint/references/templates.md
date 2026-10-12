@@ -6,7 +6,7 @@
 |------|------|----------|
 | BRIEF.md | 目标、成功标准、范围 | 创建时写入，之后不修改 |
 | PLAN.md | 步骤拆分、涉及文件、验证方式、内联状态 | 创建时写入，推进中更新状态 |
-| LOGBOOK.md | 决策记录 + 踩坑记录 | 按需追加 |
+| LOGBOOK.md | 决策记录 + 踩坑记录（派 subagent 的 sprint 另有执行进度段） | 按需追加 |
 | HANDOVER.md | 跨会话交接的当前快照 | 仅跨会话时创建，整段覆盖 |
 | artifacts/ | demo/截图/脚本等非文档产物 | 随用随存 |
 
@@ -39,12 +39,12 @@ YYYY-MM-DD
 # 计划
 
 ## 执行编排
-> 复杂 sprint 才填；简单的删掉本段。机制见 pflow-sprint/references/orchestration.md
-- 实现: <主会话亲做 / claude subagent>
-- 评审: <codex 只读对抗 / 独立 subagent>，触发: 段末检查点
-- 验收: 主会话逐步轻验 + 段末复验
-- 运行形态: <交互式 / loop>（触及进程/数据/不可逆的段强制交互）
-- 危险操作归属: <全权限 agent / 主会话亲跑>
+> 复杂 sprint 才填；简单的删掉本段。sprint 节奏见 pflow-sprint/references/orchestration.md，派活做法见 dispatch skill
+- 实现: <主会话亲做 / subagent（opus 或 sonnet）>，段内连续 Step 由同一 agent 推进
+- 提交: <执行者提交（用户已授权） / 不提交>
+- 审查与验收: 段末检查点派一个独立 agent 兼做（审代码、跑全量、扫残留），改动大或高风险时拆两个并行；<可叠加 codex 交叉审查>；主会话把关
+- 运行形态: <交互式 / loop>（起停进程、改数据库结构或真实数据、不可逆操作的段强制交互）
+- 危险操作: 主会话亲做，或经用户确认后做
 
 ## Step 1: <标题> [ ]
 - 涉及: <文件列表或产出物>
@@ -96,6 +96,12 @@ YYYY-MM-DD
 
 ---
 
+## 执行进度
+
+（仅派 subagent 执行的 sprint：主会话从执行者回报摘入跨 Step 接口契约；不派 subagent 时删掉本段）
+
+---
+
 ## 决策记录
 
 （按需追加，无决策则留空）
@@ -108,7 +114,7 @@ YYYY-MM-DD
 ```
 
 **写入规则**：
-- 执行进度段（仅复杂编排 sprint）: Step 完成时记跨 Step 接口契约，但只写指针 + 关键对接点，细节落 `ai/scratch/`；评审报告原文同样落 scratch，不进 LOGBOOK（见 orchestration.md §5/§6）
+- 执行进度段（仅复杂编排 sprint）: Step 完成时由主会话从执行者回报摘入跨 Step 接口契约，只写指针 + 关键对接点，细节落 `ai/scratch/`；审查报告原文同样落 scratch，不进 LOGBOOK（见 orchestration.md「交接分层」「段与检查点」）
 - 决策记录: 遇到决策分岔时追加，格式见下方
 - 踩坑记录: sprint 结束时提取教训
 
